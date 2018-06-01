@@ -1,0 +1,131 @@
+package main
+
+import (
+	"net/http"
+	"fmt"
+)
+
+//-----------------------------------
+//  HTTP Site Status Checker
+//
+// Checks if urls can have successful
+// HTTP connectivity
+//
+// Asks user to enter url
+// Stores url in slice
+// Ask if want to add more
+// Asks for additional url if Yes
+// Checks HTTP connection of all
+// urls in slice if No
+//------------------------------------
+
+
+
+func main(){
+
+	var links []string          			  // slice of strings for the site
+
+	addUrlToList(&links)  					  // add first url to list
+
+	ctn := "T"								  // continue program is true
+
+	for ctn == "T"{							  // while true
+
+		askAddMore()						  // ask if user wants to enter more
+
+		ans := getCommand()					  // store response
+
+		if *ans == "Y" || *ans == "y" {		  // Scenario 1: Y - add more url
+
+			addUrlToList(&links)    		  // add additional  url to list
+
+		} else if *ans == "N" || *ans == "n"{ // Scenario 2: N - check url in slice
+
+			for _,link := range links { 	  // iterate though slice
+
+				checkLink(link)				  // call checkLink on each link in slice
+			}
+			ctn = "F"						  // dont continue asking
+		}
+	}
+}
+
+
+/*
+	askUrl
+
+	ask user for url
+ */
+func askUrl(){
+
+	fmt.Println("Enter the url of the website for the status check: (eg: google.com)")
+
+}
+
+
+/**
+ * getCommand
+ *
+ * Stores command entered by user
+ *
+ *return command : command url from user
+ */
+func getCommand()*string {
+
+	var command string 		    // define variable to store url
+
+	fmt.Scanln(&command) 		// stores character from user
+
+	return &command 			// returns users url
+}
+/*
+	checkLink
+
+	Check if a link is responding to traffic
+
+	Input: link - the link to check
+ */
+func checkLink(link string){
+
+	_,err := http.Get(link) 						// checks if link is up
+
+	if err != nil {									// if there is an error returned
+
+		fmt.Println("Failed Connection: ", err)  // print error
+		return
+	}
+
+	fmt.Println("Successful Connection: ", link) // Else: print sucess to console
+
+}
+/**
+ * addMore
+ *
+ * asks user if they want to add more
+ *
+ */
+func askAddMore() {
+
+	fmt.Println("Do you want to check another url? ( Y / N ) ")
+}
+
+/**
+ * addUrlToList
+ *
+ * asks user for url and
+ * adds url entered to slice
+ *
+ *Input: List of urls
+ */
+func addUrlToList( pL *[]string){
+
+	askUrl() 		            // ask user for url
+
+	pLink := getCommand()       // store pointer to user url
+
+	link := "http://"+ *pLink   // convert user url to full url
+
+	*pL = append(*pL, link)     // add to slice
+
+
+}
