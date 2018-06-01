@@ -57,7 +57,11 @@ func main(){
 					checkLink(link, c)         // call checkLink on each link in slice using new Go routine
 				}(l)
 			}
-			ctn = "F"						  // dont continue asking
+			ctn = "F"						   // dont continue asking
+
+		} else {							   // Scenario 3: Invalid command entered
+
+			fmt.Println("--- Invalid Command Entered ---") // print error error
 		}
 	}
 }
@@ -146,3 +150,4 @@ func addUrlToList( pL *[]string){
 
 
 }
+
