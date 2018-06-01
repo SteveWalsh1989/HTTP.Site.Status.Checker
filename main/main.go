@@ -43,26 +43,24 @@ func main(){
 
 			addUrlToList(&links)    		  // add additional  url to list
 
-		} else if *ans == "N" || *ans == "n" { // Scenario 2: N - check url in slice
+		} else if *ans == "N" || *ans == "n" {// Scenario 2: N - check url in slice
 
-			c := make(chan string) // create a new channel c for strings
+			c := make(chan string) 			  // create a new channel c for strings
 
-			for _, link := range links {
+			for _, link := range links {      // loop through slice
 				go checkLink(link, c)
 			}
+			for l := range c { 				   // iterate though slice
 
-			for l := range c { // iterate though slice
-
-				go func(link string) {
-					time.Sleep(3 * time.Second)
-					checkLink(link, c)
-				}(l) // call checkLink on each link in slice using new Go routine
+				go func(link string) {	       // function literal to take the string
+					time.Sleep(3 * time.Second)// delay child routine for 3 seconds
+					checkLink(link, c)         // call checkLink on each link in slice using new Go routine
+				}(l)
 			}
 			ctn = "F"						  // dont continue asking
 		}
 	}
 }
-
 
 /*
 	askUrl
