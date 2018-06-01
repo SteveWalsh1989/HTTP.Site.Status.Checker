@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"time"
 )
 
 //-----------------------------------
@@ -17,6 +18,9 @@ import (
 // Asks for additional url if Yes
 // Checks HTTP connection of all
 // urls in slice if No
+//
+// Uses different Go routines for each check
+// Waits 3 seconds between the checks
 //------------------------------------
 
 
@@ -39,29 +43,23 @@ func main(){
 
 			addUrlToList(&links)    		  // add additional  url to list
 
-		} else if *ans == "N" || *ans == "n"{ // Scenario 2: N - check url in slice
+		} else if *ans == "N" || *ans == "n" { // Scenario 2: N - check url in slice
 
-			c:= make(chan string) 			  // create a new channel c for strings
+			c := make(chan string) // create a new channel c for strings
 
-			for _,link := range links { 	  // iterate though slice
-
-				go checkLink(link,c)			  // call checkLink on each link in slice using new Go routine
-
-
-				}
-
-
-			for i := 0; i < len(links); i++{
-				fmt.Println(<-c) // lets program know data is needed and waits
+			for _, link := range links {
+				go checkLink(link, c)
 			}
 
+			for l := range c { // iterate though slice
 
-
-
-
+				go func(link string) {
+					time.Sleep(3 * time.Second)
+					checkLink(link, c)
+				}(l) // call checkLink on each link in slice using new Go routine
+			}
 			ctn = "F"						  // dont continue asking
 		}
-
 	}
 }
 
@@ -74,7 +72,7 @@ func main(){
 func askUrl(){
 
 	fmt.Println("Enter the url of the website for the status check: (eg: google.com)")
-
+	fmt.Print("http://")
 }
 
 
@@ -108,13 +106,13 @@ func checkLink(link string, c chan string){
 	if err != nil {									// if there is an error returned
 
 		fmt.Println("Failed Connection: ", err)  // print error
-		c <- "Failed Connection!"				    // send message to channel
+		c <- link				    				// send message to channel
 		return
 	}
 
 	fmt.Println("Successful Connection: ", link) // Else: print sucess to console
-		c <- "Successful Connection!"				// send message to channel
-}
+		c <- link									// send message to channel
+		}
 /**
  * addMore
  *
