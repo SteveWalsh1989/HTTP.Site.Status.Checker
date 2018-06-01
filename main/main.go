@@ -69,9 +69,11 @@ func main(){
  */
 func askUrl(){
 
-	fmt.Println("Enter the url of the website for the status check: (eg: google.com)")
+	fmt.Println("Enter the URL of the website for the status check (ie: google.com)")
+	fmt.Println("Press Enter Key to submit URL")
 	fmt.Print("http://")
-}
+
+	}
 
 
 /**
@@ -120,6 +122,8 @@ func checkLink(link string, c chan string){
 func askAddMore() {
 
 	fmt.Println("Do you want to check another url? ( Y / N ) ")
+	fmt.Println("Press Enter Key to submit")
+
 }
 
 /**
