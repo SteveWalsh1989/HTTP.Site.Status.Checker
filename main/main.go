@@ -41,12 +41,27 @@ func main(){
 
 		} else if *ans == "N" || *ans == "n"{ // Scenario 2: N - check url in slice
 
+			c:= make(chan string) 			  // create a new channel c for strings
+
 			for _,link := range links { 	  // iterate though slice
 
-				checkLink(link)				  // call checkLink on each link in slice
+				go checkLink(link,c)			  // call checkLink on each link in slice using new Go routine
+
+
+				}
+
+
+			for i := 0; i < len(links); i++{
+				fmt.Println(<-c) // lets program know data is needed and waits
 			}
+
+
+
+
+
 			ctn = "F"						  // dont continue asking
 		}
+
 	}
 }
 
@@ -84,19 +99,21 @@ func getCommand()*string {
 	Check if a link is responding to traffic
 
 	Input: link - the link to check
+	Input: c    - channel to communicate between routines
  */
-func checkLink(link string){
+func checkLink(link string, c chan string){
 
 	_,err := http.Get(link) 						// checks if link is up
 
 	if err != nil {									// if there is an error returned
 
 		fmt.Println("Failed Connection: ", err)  // print error
+		c <- "Failed Connection!"				    // send message to channel
 		return
 	}
 
 	fmt.Println("Successful Connection: ", link) // Else: print sucess to console
-
+		c <- "Successful Connection!"				// send message to channel
 }
 /**
  * addMore
